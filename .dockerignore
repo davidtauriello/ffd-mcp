@@ -1,0 +1,30 @@
+# Dependencies & build output (rebuilt inside the container)
+node_modules/
+dist/
+
+# Version control
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files (secrets — pass via docker run -e or compose)
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dev/test artifacts
+coverage/
+*.log
+*.tsbuildinfo
+
+# Old framework files not used by this server
+archive/

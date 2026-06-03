@@ -1,0 +1,238 @@
+/**
+ * @fileoverview Domain types for SEC EDGAR API responses and internal data structures.
+ * @module services/edgar/types
+ */
+
+/** CIK resolution result from company_tickers.json lookup. */
+export interface CikMatch {
+  cik: string;
+  exchange?: string;
+  name?: string;
+  ticker?: string;
+}
+
+/** Raw entry from SEC's company_tickers.json. */
+export interface TickerEntry {
+  cik_str: number;
+  ticker: string;
+  title: string;
+}
+
+/** Submissions API response (data.sec.gov/submissions/CIK*.json). */
+export interface SubmissionsResponse {
+  cik: string;
+  entityType: string;
+  exchanges: string[];
+  filings: {
+    recent: FilingsRecent;
+    files: Array<{ name: string; filingCount: number; filingFrom: string; filingTo: string }>;
+  };
+  fiscalYearEnd: string;
+  name: string;
+  sic: string;
+  sicDescription: string;
+  stateOfIncorporation?: string;
+  tickers: string[];
+}
+
+/** Parallel arrays from the submissions API recent filings. */
+export interface FilingsRecent {
+  accessionNumber: string[];
+  filingDate: string[];
+  form: string[];
+  primaryDocDescription: string[];
+  primaryDocument: string[];
+  reportDate: string[];
+}
+
+/** EFTS full-text search response. */
+export interface EftsResponse {
+  aggregations?: {
+    form_filter?: { buckets: Array<{ key: string; doc_count: number }> };
+  };
+  hits: {
+    hits: EftsHit[];
+    total: { value: number; relation: string };
+  };
+  query: { from: number; size: number; query: string };
+}
+
+export interface EftsHit {
+  _id: string;
+  _source: {
+    adsh: string;
+    ciks?: string[];
+    display_names?: string[];
+    file_date: string;
+    file_description?: string;
+    file_num?: string[];
+    file_type?: string;
+    film_num?: string[];
+    form?: string;
+    biz_locations?: string[];
+    inc_states?: string[];
+    items?: string[];
+    period_ending?: string | null;
+    root_forms?: string[];
+    sequence?: number;
+    sics?: string[];
+    xsl?: string | null;
+  };
+}
+
+/** Filing index JSON response. */
+export interface FilingIndex {
+  directory: {
+    name: string;
+    item: Array<{ name: string; type: string; size: string; 'last-modified': string }>;
+  };
+}
+
+/** XBRL companyconcept API response. */
+export interface CompanyConceptResponse {
+  cik: number;
+  description?: string;
+  entityName: string;
+  label: string;
+  tag: string;
+  taxonomy: string;
+  units: Record<string, CompanyConceptUnit[]>;
+}
+
+export interface CompanyConceptUnit {
+  accn: string;
+  end: string;
+  filed: string;
+  form: string;
+  fp: string;
+  frame?: string;
+  fy: number;
+  start?: string;
+  val: number;
+}
+
+/** XBRL frames API response. */
+export interface FramesResponse {
+  ccp: string;
+  data: FrameEntry[];
+  description?: string;
+  label: string;
+  pts: number;
+  tag: string;
+  taxonomy: string;
+  uom: string;
+}
+
+export interface FrameEntry {
+  accn: string;
+  cik: number;
+  end: string;
+  entityName: string;
+  loc: string;
+  /** Period start date — present for duration frames, absent for instant frames. */
+  start?: string;
+  val: number;
+}
+
+/** Financial statement grouping for XBRL concepts. */
+export type ConceptGroup =
+  | 'income_statement'
+  | 'balance_sheet'
+  | 'cash_flow'
+  | 'per_share'
+  | 'entity_info';
+
+/** XBRL taxonomy a concept belongs to. */
+export type ConceptTaxonomy = 'us-gaap' | 'ifrs-full' | 'dei';
+
+/** Friendly concept name mapping. */
+export interface ConceptMapping {
+  group: ConceptGroup;
+  /**
+   * IFRS tag variants for this concept (used when taxonomy === 'ifrs-full').
+   * When present, these replace `tags` for IFRS lookups so friendly names resolve
+   * correctly against ifrs-full filers (e.g. Spotify's 20-F filings).
+   */
+  ifrsTags?: string[];
+  label: string;
+  tags: string[];
+  taxonomy: ConceptTaxonomy;
+  unit: string;
+}
+
+// ─── Filing Fee Disclosure (Exhibit 107) types ────────────────────────────────
+
+/** CIK resolution result. */
+export interface CikResolution {
+  cik: string;
+  name: string;
+  ticker: string | null;
+}
+
+/** Company filings response from data.sec.gov/submissions/CIK*.json. */
+export interface EdgarCompanyFilingsResponse {
+  cik: string;
+  entityType: string;
+  name: string;
+  tickers: string[];
+  exchanges: string[];
+  sic: string;
+  sicDescription: string;
+  filings: {
+    recent: {
+      accessionNumber: string[];
+      filingDate: string[];
+      form: string[];
+      primaryDocument: string[];
+      primaryDocDescription: string[];
+      reportDate: string[];
+    };
+    files: Array<{ name: string; filingCount: number; filingFrom: string; filingTo: string }>;
+  };
+}
+
+export type SecurityType = "Equity" | "Debt" | "Other" | "Unknown";
+
+export interface FeeLineItem {
+  row: number;
+  securityType: SecurityType;
+  classTitle: string;
+  feeCalcRule: string | null;
+  amountRegistered: number | null;
+  pricePerUnit: number | null;
+  maxAggregateOffering: number | null;
+  feeRate: number | null;
+  feeAmount: number | null;
+  previouslyPaid: boolean;
+  xbrlContext: string;
+}
+
+export interface FeeOffset {
+  rule: string | null;
+  formType: string | null;
+  fileNumber: string | null;
+  offsetAmount: number | null;
+}
+
+export interface FilingFeeExhibit {
+  cik: string;
+  entityName: string;
+  accessionNumber: string;
+  formType: string;
+  filingDate: string;
+  exhibitDocument: string | null;
+  exhibitUrl: string;
+  exhibitType: string;
+  submissionType: string;
+  offeringTableNa: boolean;
+  offsetTableNa: boolean;
+  combinedProspectusTableNa: boolean;
+  lineItems: FeeLineItem[];
+  offsets: FeeOffset[];
+  totalOffering: number | null;
+  totalFee: number | null;
+  totalPreviouslyPaid: number | null;
+  totalFeeOffset: number | null;
+  netFeeDue: number | null;
+  feeRate: number | null;
+}

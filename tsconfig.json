@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "useUnknownInCatchVariables": true,
+    "verbatimModuleSyntax": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "sourceMap": true,
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+
+    "lib": ["ESNext"],
+    "types": ["node"],
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/index.ts",
+    "src/config/server-config.ts",
+    "src/services/edgar/types.ts",
+    "src/services/edgar/edgar-client.ts",
+    "src/services/edgar/fee-exhibit-parser.ts",
+    "src/services/edgar/fee-exhibit-service.ts",
+    "src/mcp-server/tools/definitions/get-fee-exhibit.ts",
+    "src/mcp-server/tools/definitions/search-fee-filings.ts",
+    "src/mcp-server/tools/definitions/get-company-fee-history.ts",
+    "src/mcp-server/tools/definitions/compare-fee-rates.ts",
+    "src/mcp-server/tools/definitions/search-filings-by-fee.ts",
+    "src/mcp-server/tools/definitions/get-ffd-concepts-by-company.ts",
+    "src/mcp-server/tools/definitions/export-fee-data.ts",
+    "src/mcp-server/resources/definitions/fee-taxonomy.ts",
+    "src/mcp-server/resources/definitions/form-types.ts",
+    "src/mcp-server/prompts/definitions/fee-disclosure-analysis.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
